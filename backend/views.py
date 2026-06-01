@@ -41,16 +41,28 @@ def job_list(request):
     serializer = JobSerializer(jobs, many=True)
     return Response(serializer.data)
 
+
 @api_view(['POST'])
 def apply_job(request):
-    serializer = ApplicationSerializer(data=request.data)
-    job_id = request.data.get('job_id')
-    applicant_id = request.data.get('applicant_id')
 
-    
+    job_id = request.data.get('job')
+    applicant_id = request.data.get('applicant')
+
+    if Application.objects.filter(job_id=job_id, applicant_id=applicant_id).exists():
+
+        return Response(
+            {"message": "You have already applied for this job"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    serializer = ApplicationSerializer(data=request.data)
+
     if serializer.is_valid():
         serializer.save()
-        return Response({"message": "Application submitted successfully"}, status=status.HTTP_201_CREATED)
+
+        return Response(
+            {"message": "Application submitted successfully"},
+            status=status.HTTP_201_CREATED
+        )
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    if Application.objects.filter(job_id=request.data.get('job_id'), applicant_id=request.data.get('applicant_id')).exists():
-        return Response({"message": "You have already applied for this job"}, status=status.HTTP_400_BAD_REQUEST)

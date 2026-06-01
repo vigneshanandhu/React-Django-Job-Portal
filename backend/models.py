@@ -20,3 +20,5 @@ class Application(models.Model):
     applicant = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     applied_at = models.DateTimeField(auto_now_add=True)
+
+   
