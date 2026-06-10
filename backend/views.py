@@ -3,7 +3,7 @@ from urllib import request
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import ApplicationSerializer, RegisterSerializer, JobSerializer,ApplicationSerializer
+from .serializers import  RegisterSerializer, JobSerializer,ApplicationSerializer
 from django.contrib.auth.models import User
 from .models import Application, Job
 
@@ -41,6 +41,21 @@ def job_list(request):
     serializer = JobSerializer(jobs, many=True)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def job_detail(request, jobId):
+
+    try:
+        job = Job.objects.get(id=jobId)
+
+        serializer = JobSerializer(job)
+
+        return Response(serializer.data)
+
+    except Job.DoesNotExist:
+
+        return Response({
+            "message": "Job not found"
+        }, status=404)
 
 @api_view(['POST'])
 def apply_job(request):
